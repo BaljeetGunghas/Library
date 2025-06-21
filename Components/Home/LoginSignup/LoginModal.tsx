@@ -97,7 +97,7 @@ export const LoginModal = ({ isOpen, setIsOpen, onLoginSuccess }: Props) => {
                                         placeholder="Email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className={`w-full rounded-xl border px-12 py-4 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 transition ${errors.email ? "border-red-500" : "border-gray-300 focus:border-blue-500"
+                                        className={`w-full rounded-xl border px-12 py-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 transition ${errors.email ? "border-red-500" : "border-gray-300 focus:border-blue-500"
                                             }`}
                                         autoFocus
                                         required
@@ -114,7 +114,7 @@ export const LoginModal = ({ isOpen, setIsOpen, onLoginSuccess }: Props) => {
                                         placeholder="Password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className={`w-full rounded-xl border px-12 py-4 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 transition ${errors.password ? "border-red-500" : "border-gray-300 focus:border-blue-500"
+                                        className={`w-full rounded-xl border px-12 py-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 transition ${errors.password ? "border-red-500" : "border-gray-300 focus:border-blue-500"
                                             }`}
                                         required
                                     />
