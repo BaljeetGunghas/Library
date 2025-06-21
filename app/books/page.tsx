@@ -49,7 +49,7 @@ const BooksClient = () => {
         <>
             <div className="absolute inset-0 bg-black/50" />
 
-            <main className="min-h-screen text-white px-6 py-[8rem] w-[80%] mx-auto">
+            <main className="min-h-screen text-white px-6 py-[8rem] w-full md:w-[80%] mx-auto">
                 <h1 className="text-4xl font-bold text-center mb-12" data-aos="fade-up">
                     Books
                 </h1>

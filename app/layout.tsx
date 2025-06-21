@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Lato } from "next/font/google";
 import ResponsiveNavbar from "@/Components/Navbar/ResponsiveNavBar";
+import Footer from "@/Components/Footer/Footer";
 
 const fonts = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -22,16 +23,16 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Velvet Haven Team" }],
   creator: "Velvet Haven",
-  metadataBase: new URL("https://velvet-haven.netlify.app"),
+  metadataBase: new URL("https://liberary.netlify.app/"),
   openGraph: {
     title: "Velvet Haven Library",
     description:
       "Browse our curated collection of books and rent them instantly!",
-    url: "https://velvet-haven.netlify.app",
+    url: "https://liberary.netlify.app/",
     siteName: "Velvet Haven Library",
     images: [
       {
-        url: "https://velvet-haven.netlify.app/og-image.jpg",
+        url: "https://liberary.netlify.app/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "Velvet Haven Book Library",
@@ -43,7 +44,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Velvet Haven Library",
     description: "Explore and rent books across a variety of genres.",
-    images: ["https://velvet-haven.netlify.app/og-image.jpg"],
+    images: ["https://liberary.netlify.app/og-image.jpg"],
     creator: "@VelvetHaven",
   },
 };
@@ -75,6 +76,7 @@ export default function RootLayout({
         >
           {children}
         </div>
+        <Footer />
       </body>
     </html>
   );
