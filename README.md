@@ -77,8 +77,8 @@ This project is a library book reservation system built using React and Next.js.
 1. Clone the repo:
 
 ```bash
-git clone https://github.com/yourusername/library-reservation.git
-cd library-reservation
+git clone https://github.com/BaljeetGunghas/Library.git
+cd Library
 ```
 
 2. Install dependencies:
