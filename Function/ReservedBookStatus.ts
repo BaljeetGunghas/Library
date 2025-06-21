@@ -1,0 +1,11 @@
+import { books } from "@/Data/data";
+
+export function updateBookAvailability(bookId: number, isAvailable: boolean) {
+  // Create a new array with updated availability
+  return books.map(book => {
+    if (book.id === bookId) {
+      return { ...book, available: isAvailable };
+    }
+    return book;
+  });
+}

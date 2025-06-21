@@ -1,26 +1,79 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+html {
+  scroll-behavior: smooth;
+
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer components {
+  .main_bg {
+    @apply relative bg-[url('/images/hero.jpg')] bg-cover bg-center bg-no-repeat text-white;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Gradient overlay */
+    &::before {
+      content: '';
+      @apply absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent;
+      z-index: 0;
+    }
+
+    /* Make sure content layers on top */
+    >* {
+      position: relative;
+      z-index: 10;
+    }
+  }
+
+  .primery_bg {
+    @apply bg-[#343434]
+  }
+
+  .secondary_bg {
+    @apply bg-[#0C0C0C]
+  }
+
+  .forcast_bg {
+    @apply bg-gradient-to-br from-[#2f2f2f]/80 via-[#353935]/90 to-[#1e1e1e]/80 backdrop-blur-md border border-white/10 rounded-xl shadow-md;
+  }
+
+
+  .forcast_bg {
+    @apply bg-[#817575] text-white rounded-xl shadow-lg border border-gray-600/30;
+  }
+
+  .text-bg {
+    background-image: linear-gradient(to right, #8750f7 0%, #fff 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background-color: #4402ef;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #c277fa;
+    border-radius: 10px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes slide-in-left {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.underline-slide-in {
+  animation: slide-in-left 0.5s ease forwards;
 }
