@@ -1,12 +1,30 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { LoginModal } from '../LoginSignup/LoginModal';
+import { User } from '@/Components/Navbar/Nav';
 
 const Hero = () => {
     const [query, setQuery] = useState('');
     const router = useRouter();
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
+    }, []);
+
+
+    const handleLoginSuccess = (userData: User) => {
+        setUser(userData);
+        setIsLoginModalOpen(false);
+    };
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         const trimmedQuery = query.trim();
@@ -78,12 +96,13 @@ const Hero = () => {
                     >
                         📚 Browse Library
                     </Link>
-                    <Link
-                        href="/signup"
-                        className="bg-white hover:bg-gray-100 text-black font-semibold text-base sm:text-lg px-6 py-3 rounded-full shadow-lg transition duration-300"
+                    <button
+                        onClick={() => setIsLoginModalOpen(true)}
+                        disabled={user?.id ? true : false}
+                        className="bg-white cursor-pointer disabled:cursor-not-allowed disabled:bg-slate-300 hover:bg-gray-100 text-black font-semibold text-base sm:text-lg px-6 py-3 rounded-full shadow-lg transition duration-300"
                     >
                         👤 Join Now
-                    </Link>
+                    </button>
                 </div>
 
                 <div
@@ -96,6 +115,14 @@ const Hero = () => {
                     <span>• ✅ For All Ages</span>
                 </div>
             </div>
+
+            {isLoginModalOpen && (
+                <LoginModal
+                    isOpen={isLoginModalOpen}
+                    setIsOpen={setIsLoginModalOpen}
+                    onLoginSuccess={handleLoginSuccess} // Pass callback
+                />
+            )}
         </section>
 
     );

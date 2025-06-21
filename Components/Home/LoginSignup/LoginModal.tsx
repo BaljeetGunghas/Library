@@ -55,6 +55,7 @@ export const LoginModal = ({ isOpen, setIsOpen, onLoginSuccess }: Props) => {
             };
             localStorage.setItem("user", JSON.stringify(user));
             setSuccessMsg(`Welcome back, ${email}!`);
+            onLoginSuccess(user)
             setLoading(false);
             setTimeout(() => {
                 setSuccessMsg("");

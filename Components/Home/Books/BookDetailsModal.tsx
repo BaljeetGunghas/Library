@@ -80,8 +80,8 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
     const handleReserve = () => {
         if (!book.available) return;
 
-        let reservations = getReservations(RESERVATION_KEY);
-        let permanentReservations = getReservations(PERMANENT_RESERVATION_KEY);
+        const reservations = getReservations(RESERVATION_KEY);
+        const permanentReservations = getReservations(PERMANENT_RESERVATION_KEY);
 
 
 

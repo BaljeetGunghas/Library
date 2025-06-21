@@ -12,7 +12,7 @@ type Props = {
     openNav: () => void;
 };
 
-type User = {
+export type User = {
     id: string;
     email: string;
     avatarUrl?: string;
@@ -70,6 +70,8 @@ const Nav = ({ openNav }: Props) => {
 
     const handleLogout = () => {
         localStorage.removeItem("user");
+        localStorage.removeItem("library_reservations_permanent");
+        localStorage.removeItem("library_reservations");
         setUser(null);
         setDropdownOpen(false);
     };
@@ -138,8 +140,8 @@ const Nav = ({ openNav }: Props) => {
 
                             {/* Dropdown menu */}
                             {dropdownOpen && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-50 py-2">
-                                    <Link href={'/reserved-books'} className=" block px-4 py-2 text-gray-700 text-sm cursor-pointer">
+                                <div className="absolute right-0 mt-2 w-48  backdrop-blur-2xl rounded-lg shadow-lg ring-1 ring-amber-300 ring-opacity-5 z-50 py-2">
+                                    <Link href={'/reserved-books'} className=" block px-4 py-2 text-white text-sm cursor-pointer">
                                         Reserved Book
                                     </Link>
                                     <button
