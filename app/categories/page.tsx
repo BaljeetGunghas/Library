@@ -1,0 +1,57 @@
+import React from 'react';
+import Link from 'next/link';
+import { categories } from '@/Data/data';
+
+
+type CategoryIconProps = {
+    icon?: string | null;
+    color?: string;
+};
+
+const CategoryIcon: React.FC<CategoryIconProps> = ({ icon, color }) => {
+    if (!icon) return null;
+
+    const isUrl = typeof icon === 'string' && (icon.startsWith('http://') || icon.startsWith('https://'));
+    const isFA = typeof icon === 'string' && icon.includes('fa-');
+
+    if (isUrl) {
+        // SVG URL
+        return <img src={icon} alt="category icon" className="w-12 h-12 mx-auto mb-4" />;
+    } else if (isFA) {
+        // FontAwesome icon with color style
+        return <i className={`${icon} text-4xl mx-auto mb-4`} style={{ color }} aria-hidden="true" />;
+    } else {
+        // Emoji or plain text icon
+        return <span className="text-5xl block text-center mb-4" style={{ color }}>{icon}</span>;
+    }
+};
+
+const CategoriesPage = () => {
+    return (
+        <>
+            <div className="absolute inset-0 bg-black/50" />
+
+            <main className="min-h-screen main_bg text-white px-6 py-[8rem]">
+                <div className="max-w-6xl mx-auto">
+                    <h1 className="text-4xl font-bold text-center mb-12">Book Categories</h1>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {categories.map((cat) => (
+                            <Link
+                                key={cat.id}
+                                href={`/books?category=${cat.slug}`}
+                                className="block backdrop-blur-3xl p-6 rounded-xl shadow hover:shadow-lg transition border border-gray-200 hover:border-yellow-400 text-center"
+                            >
+                                <CategoryIcon icon={cat.icon} color={cat.color} />
+                                <h2 className="text-xl font-semibold mb-2">{cat.name}</h2>
+                                <p className="text-sm text-slate-300">{cat.total_books} books</p>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </main>
+        </>
+    );
+};
+
+export default CategoriesPage;
