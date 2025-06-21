@@ -42,7 +42,7 @@ const FixedFooterIcons = () => {
   ];
 
   return (
-    <footer className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-[80%] max-w-5xl bg-black/30 backdrop-blur-md rounded-full shadow-xl px-6 py-3 flex items-center justify-center gap-6 z-50">
+    <footer className="fixed bottom-4 left-1/2 transform -translate-x-1/2  md:w-[80%] max-w-5xl bg-black/30 backdrop-blur-md rounded-full shadow-xl px-6 py-3 flex items-center justify-center gap-6 z-50">
       {iconLinks.map(({ href, icon, label, color }, idx) => (
         <a
           key={idx}

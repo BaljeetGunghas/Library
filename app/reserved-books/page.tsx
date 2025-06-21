@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { Book, books } from '@/Data/data';
+import Image from 'next/image';
 
 const RESERVATION_KEY = 'library_reservations';
 
@@ -76,7 +77,7 @@ const ReservedBooksPage = () => {
     <>
       <div className="absolute inset-0 bg-black/50" />
 
-      <main className="min-h-screen text-white px-6 py-[8rem] w-[80%] mx-auto">
+      <main className="min-h-screen text-white px-6 py-[8rem] w-full md:w-[80%] mx-auto">
         <h1
           className="text-4xl font-bold mb-8 text-white text-center"
           data-aos="fade-down"
@@ -96,11 +97,13 @@ const ReservedBooksPage = () => {
                 data-aos="fade-up"
                 data-aos-delay={index * 100}
               >
-                <img
+                <Image
                   src={book.cover_image}
                   alt={book.title}
                   className="w-24 h-36 object-cover rounded-md flex-shrink-0"
                   loading="lazy"
+                  width={100}
+                  height={100}
                 />
 
                 <div className="flex flex-col flex-grow space-y-2 md:space-y-4">
