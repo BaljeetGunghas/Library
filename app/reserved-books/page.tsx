@@ -47,6 +47,7 @@ const ReservedBooksPage = () => {
     const updated = reservations.filter(r => r.bookId !== bookId);
     saveReservations(updated);
     setReservations(updated);
+
     alert('Reservation cancelled successfully!');
   };
 

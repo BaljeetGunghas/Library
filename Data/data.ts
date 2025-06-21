@@ -27,7 +27,7 @@ export interface Book {
 }
 
 
-export const books = [
+export let books = [
     {
         "id": 1,
         "title": "The Subtle Art of Not Giving a F*ck",
@@ -1682,3 +1682,13 @@ export const categories = [
     { id: 16, name: "Education", slug: "education", book_ids: [55, 56, 57], total_books: 3, icon: "fa-solid fa-graduation-cap", color: "#4299E1" },// sky blue
     { id: 17, name: "Spirituality", slug: "spirituality", book_ids: [58, 59, 60], total_books: 3, icon: "fa-solid fa-praying-hands", color: "#D53F8C" } // pink
 ];
+
+
+export const contactData = {
+  phone: "+91-8685070017",
+  email: "baljeetgunghas5@gmail.com",
+  address: "New Delhi, India",
+  linkdin: 'https://www.linkedin.com/in/dev-baljeet-gunghas-b6698421b/',
+  github: 'https://github.com/BaljeetGunghas',
+  instagram: 'https://www.instagram.com/baljeet_gunghas2/',
+};
