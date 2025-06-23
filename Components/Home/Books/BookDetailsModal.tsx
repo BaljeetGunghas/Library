@@ -74,6 +74,13 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
 
     useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            setUser(() => JSON.parse(storedUser));
+        }
+    }, [])
+
+    useEffect(() => {
         let reservations = getReservations(RESERVATION_KEY);
         reservations = reservations.filter(r => !isExpired(r.reservedAt));
         saveReservations(reservations, RESERVATION_KEY);
@@ -86,7 +93,7 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
 
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
-            setUser(JSON.parse(storedUser));
+            setUser(() => JSON.parse(storedUser));
         }
 
         if (!user || !user.id) {
@@ -116,13 +123,13 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
     };
 
     return (
-        <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-100">
+        <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-40">
             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />
             <div className="fixed inset-0 flex items-center justify-center p-2 overflow-y-auto">
                 <Dialog.Panel className="relative max-w-3xl w-full bg-white rounded-2xl shadow-xl overflow-hidden ring-1 ring-amber-200">
                     <button
                         onClick={() => setIsOpen(false)}
-                        className="absolute top-2 md:top-4 right-2  md:right-4 text-gray-400 hover:text-amber-600 transition rounded-full border "
+                        className="absolute top-2 md:top-4 right-2  md:right-4 text-gray-400 hover:text-amber-600 transition rounded-full border cursor-pointer "
                         aria-label="Close"
                     >
                         <FaXmark className="w-6 h-6" />

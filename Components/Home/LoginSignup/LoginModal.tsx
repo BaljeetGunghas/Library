@@ -68,7 +68,7 @@ export const LoginModal = ({ isOpen, setIsOpen, onLoginSuccess }: Props) => {
 
     return (
         <Transition appear show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-50" onClose={() => setIsOpen(false)}>
+            <Dialog as="div" className="relative z-5000" onClose={() => setIsOpen(false)}>
                 <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />
                 <div className="fixed inset-0 flex items-center justify-center p-4">
                     <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-3xl backdrop-blur-2xl p-10 shadow-2xl transition-all relative">
@@ -136,7 +136,7 @@ export const LoginModal = ({ isOpen, setIsOpen, onLoginSuccess }: Props) => {
 
                         <button
                             onClick={() => setIsOpen(false)}
-                            className="absolute top-5 right-5 rounded-full text-gray-400 hover:text-gray-700 transition text-2xl font-bold"
+                            className="absolute top-5 right-5 rounded-full text-gray-400 hover:text-gray-700 transition text-2xl font-bold cursor-pointer bg-white opacity-30 h-7 w-7 flex justify-center items-center "
                             aria-label="Close login modal"
                         >
                             &times;
