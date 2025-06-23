@@ -116,26 +116,26 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
     };
 
     return (
-        <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
+        <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-100">
             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />
-            <div className="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto">
+            <div className="fixed inset-0 flex items-center justify-center p-2 overflow-y-auto">
                 <Dialog.Panel className="relative max-w-3xl w-full bg-white rounded-2xl shadow-xl overflow-hidden ring-1 ring-amber-200">
                     <button
                         onClick={() => setIsOpen(false)}
-                        className="absolute top-4 right-4 text-gray-400 hover:text-amber-600 transition"
+                        className="absolute top-2 md:top-4 right-2  md:right-4 text-gray-400 hover:text-amber-600 transition rounded-full border "
                         aria-label="Close"
                     >
                         <FaXmark className="w-6 h-6" />
                     </button>
 
-                    <Dialog.Title className="flex items-center gap-3 px-6 pt-6 pb-3 text-2xl font-bold text-amber-700">
+                    <Dialog.Title className="flex items-center gap-3 px-4 pt-6 pb-3 text-xl md:text-2xl font-bold text-amber-700">
                         <FaBookOpen className="text-amber-600" />
                         {book.title}
                     </Dialog.Title>
 
-                    <nav className="flex border-b border-gray-200 px-6 mb-4 select-none">
+                    <nav className="flex border-b border-gray-200 px-4 mb-4 select-none text-sm">
                         <button
-                            className={`py-2 mr-6 font-semibold text-sm ${activeTab === 'details'
+                            className={`py - 2 mr-6 font-semibold ${activeTab === 'details'
                                 ? 'border-b-2 border-amber-600 text-amber-600'
                                 : 'text-gray-500 hover:text-amber-600'
                                 }`}
@@ -144,7 +144,7 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
                             Details
                         </button>
                         <button
-                            className={`py-2 font-semibold text-sm ${activeTab === 'description'
+                            className={`py - 2 font-semibold ${activeTab === 'description'
                                 ? 'border-b-2 border-amber-600 text-amber-600'
                                 : 'text-gray-500 hover:text-amber-600'
                                 }`}
@@ -154,23 +154,22 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
                         </button>
                     </nav>
 
-                    <div className="px-6 pb-6 flex flex-col md:flex-row gap-6">
-                        <div className="w-full md:w-1/3 rounded-lg overflow-hidden ">
+                    <div className="px-4 pb-6 flex flex-col md:flex-row gap-4 md:gap-6">
+                        <div className="w-full md:w-1/3 flex justify-center md:justify-start">
                             <Image
                                 src={book.cover_image}
                                 alt={book.title}
-                                className="w-full h-auto object-cover"
+                                className="rounded-lg object-cover md:w-full md:h-fit"
                                 loading="lazy"
-                                width={100}
-                                height={150}
+                                width={120}
+                                height={180}
                             />
                         </div>
 
-                        <div className="w-full md:w-2/3 text-gray-800 text-sm space-y-3">
+                        <div className="w-full md:w-2/3 text-gray-800 text-sm space-y-4">
                             {activeTab === 'details' && (
-                                <div className="bg-white  rounded-2xl w-full max-w-lg space-y-6 ">
-                                    <h2 className="text-2xl font-bold text-gray-900 border-b pb-2">📘 Book Information</h2>
-
+                                <div className="bg-white rounded-2xl w-full space-y-6">
+                                    <h2 className="text-xl md:text-2xl font-bold text-gray-900 border-b pb-2">📘 Book Information</h2>
                                     <div className="grid grid-cols-2 gap-4 text-sm text-gray-700">
                                         <InfoItem label="Author" value={book.author} icon={<FaUser />} />
                                         <InfoItem label="Category" value={book.category} icon={<FaBook />} />
@@ -209,7 +208,7 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
                         </button>
                     </div>
                 </Dialog.Panel>
-            </div>
+            </div >
 
             {isLoginModalOpen && (
                 <LoginModal
@@ -218,7 +217,7 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
                     onLoginSuccess={() => { }}
                 />
             )}
-        </Dialog>
+        </Dialog >
     );
 };
 
@@ -231,10 +230,10 @@ interface InfoItemProps {
 
 const InfoItem: React.FC<InfoItemProps> = ({ label, value, icon, valueClass }) => (
     <div className="flex items-start gap-2">
-        <div className="text-amber-600 mt-1 text-2xl">{icon}</div>
+        <div className="text-amber-600 mt-1  text-xl md:text-2xl">{icon}</div>
         <div className='flex flex-col space-y-1'>
-            <div className="text-xl uppercase text-gray-500">{label}</div>
-            <div className={`text-sm font-medium ${valueClass || 'text-gray-800'}`}>{value}</div>
+            <div className="text-sm md:text-xl uppercase text-gray-500">{label}</div>
+            <div className={`text-xs font-medium ${valueClass || 'text-gray-800'}`}>{value}</div>
         </div>
     </div>
 );
