@@ -24,6 +24,7 @@ export interface Book {
     discount: number;
     currency: string;
     stock_quantity: number;
+    reservedBy: string[]
 }
 
 

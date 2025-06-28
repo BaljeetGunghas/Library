@@ -4,10 +4,9 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { loginRequest, registerRequest } from "@/redux/slices/authSlice";
 import { LoginForm, User } from "@/redux/types/user";
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, use, useEffect, useState } from "react";
-import { FaUser, FaEnvelope, FaLock, FaCheckCircle } from "react-icons/fa";
+import { Fragment,  useEffect, useState } from "react";
+import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 import { toast } from "sonner";
-import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "./authContext";
 
 type Props = {
@@ -26,7 +25,6 @@ const AuthModal = ({ isOpen, setIsOpen, onAuthSuccess }: Props) => {
   // Shared state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // Register only
@@ -108,12 +106,7 @@ const AuthModal = ({ isOpen, setIsOpen, onAuthSuccess }: Props) => {
               {isLogin ? "Sign In" : "Register"}
             </Dialog.Title>
 
-            {successMsg ? (
-              <div className="flex items-center justify-center text-green-600 space-x-2 text-lg mb-4">
-                <FaCheckCircle className="text-2xl" />
-                <span>{successMsg}</span>
-              </div>
-            ) : isLogin ? (
+            {isLogin ? (
               <form
                 onSubmit={(e) => {
                   e.preventDefault();

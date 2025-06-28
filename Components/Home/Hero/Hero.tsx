@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AuthModal from '../LoginSignup/AuthModel';
-import { User } from '@/redux/types/user';
 import { useAuth } from '../LoginSignup/authContext';
 import { useAppSelector } from '@/redux/hooks';
 

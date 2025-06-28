@@ -14,8 +14,6 @@ import {
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import AuthModal from '../LoginSignup/AuthModel';
-import { updateBookAvailability } from '@/Function/ReservedBookStatus';
-import { User } from '@/redux/types/user';
 import { FaCheckCircle, FaFileAlt, FaTimesCircle } from 'react-icons/fa';
 import { Book } from '@/Data/data';
 import axios from 'axios';
@@ -30,7 +28,6 @@ interface BookDetailsModalProps {
 }
 
 const RESERVATION_KEY = 'library_reservations';
-const PERMANENT_RESERVATION_KEY = 'library_reservations_permanent';
 
 interface Reservation {
     bookId: string;
@@ -64,22 +61,28 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isBookAvailable, setIsBookAvailable] = useState(book.available);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
             setUser(JSON.parse(storedUser));
         }
     }, []);
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         let reservations = getReservations(RESERVATION_KEY);
         reservations = reservations.filter((r) => !isExpired(r.reservedAt));
         saveReservations(reservations, RESERVATION_KEY);
 
-        const reserved = reservations.some((r) => r.bookId === book._id);
-        setIsReserved(reserved);
-    }, [book._id]);
+        const localReserved = reservations.some((r) => r.bookId === book._id);
+        const userId = user?.id;
 
+        // Check server-side `reservedBy` list
+        const serverReserved = userId && book.reservedBy?.includes(userId);
+
+        // If either local or server reservation exists
+        setIsReserved(localReserved || !!serverReserved);
+    }, [book._id, user]);
     const handleReserve = async () => {
         if (!book.available) return;
 
@@ -110,13 +113,19 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
             } else {
                 toast.error(response.data.message || 'Reservation failed.');
             }
-        } catch (error: any) {
-            console.error('Reservation error:', error);
+        } catch (error: unknown) {
+            let errorMessage = 'Something went wrong';
+            if (axios.isAxiosError(error)) {
+                errorMessage = error.response?.data?.message || error.message;
+            } else if (error instanceof Error) {
+                errorMessage = error.message;
+            }
             toast.error(
-                error.response?.data?.message || 'Something went wrong while reserving the book.'
+                errorMessage || 'Something went wrong while reserving the book.'
             );
-        }
-    };
+
+        };
+    }
 
     return (
         <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-40">
