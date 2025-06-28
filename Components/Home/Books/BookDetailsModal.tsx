@@ -1,3 +1,5 @@
+'use client';
+
 import { Dialog } from '@headlessui/react';
 import {
     FaXmark,
@@ -9,29 +11,17 @@ import {
     FaStar,
     FaBookOpen,
 } from 'react-icons/fa6';
-import { useEffect, useState } from 'react';
-import { FaCheckCircle, FaFileAlt, FaTimesCircle } from 'react-icons/fa';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import AuthModal from '../LoginSignup/AuthModel';
 import { updateBookAvailability } from '@/Function/ReservedBookStatus';
-import { User } from '@/Components/Navbar/Nav';
-import { LoginModal } from '../LoginSignup/LoginModal';
-
-interface Book {
-    id: number;
-    title: string;
-    author: string;
-    description: string;
-    cover_image: string;
-    price: number;
-    rating: number;
-    category: string;
-    publisher: string;
-    language: string;
-    pages: number;
-    available: boolean;
-    currency: string;
-    edition?: string;
-}
+import { User } from '@/redux/types/user';
+import { FaCheckCircle, FaFileAlt, FaTimesCircle } from 'react-icons/fa';
+import { Book } from '@/Data/data';
+import axios from 'axios';
+import { toast } from 'sonner';
+import { useAppSelector } from '@/redux/hooks';
+import { useAuth } from '../LoginSignup/authContext';
 
 interface BookDetailsModalProps {
     isOpen: boolean;
@@ -43,16 +33,15 @@ const RESERVATION_KEY = 'library_reservations';
 const PERMANENT_RESERVATION_KEY = 'library_reservations_permanent';
 
 interface Reservation {
-    bookId: number;
+    bookId: string;
     reservedAt: number;
 }
 
 const getReservations = (key: string): Reservation[] => {
     if (typeof window === 'undefined') return [];
-    const data = localStorage.getItem(key);
-    if (!data) return [];
     try {
-        return JSON.parse(data) as Reservation[];
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : [];
     } catch {
         return [];
     }
@@ -68,58 +57,65 @@ const isExpired = (reservedAt: number) => {
 };
 
 const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, book }) => {
+    const { user, setUser } = useAuth();
+    const { user: USER } = useAppSelector((state) => state.auth);
     const [activeTab, setActiveTab] = useState<'details' | 'description'>('details');
     const [isReserved, setIsReserved] = useState(false);
-    const [user, setUser] = useState<User | null>(null);
-    const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [isBookAvailable, setIsBookAvailable] = useState(book.available);
 
     useEffect(() => {
-        const storedUser = localStorage.getItem("user");
+        const storedUser = localStorage.getItem('user');
         if (storedUser) {
-            setUser(() => JSON.parse(storedUser));
+            setUser(JSON.parse(storedUser));
         }
-    }, [])
+    }, []);
 
     useEffect(() => {
         let reservations = getReservations(RESERVATION_KEY);
-        reservations = reservations.filter(r => !isExpired(r.reservedAt));
+        reservations = reservations.filter((r) => !isExpired(r.reservedAt));
         saveReservations(reservations, RESERVATION_KEY);
-        const reserved = reservations.some(r => r.bookId === book.id);
-        setIsReserved(reserved);
-    }, [book.id]);
 
-    const handleReserve = () => {
+        const reserved = reservations.some((r) => r.bookId === book._id);
+        setIsReserved(reserved);
+    }, [book._id]);
+
+    const handleReserve = async () => {
         if (!book.available) return;
 
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(() => JSON.parse(storedUser));
-        }
-
-        if (!user || !user.id) {
+        if (!user || !user.id || !USER?.id) {
             return setIsLoginModalOpen(true);
         }
 
-        const reservations = getReservations(RESERVATION_KEY);
-        const permanentReservations = getReservations(PERMANENT_RESERVATION_KEY);
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                return setIsLoginModalOpen(true);
+            }
 
-        if (permanentReservations.some(r => r.bookId === book.id)) {
-            alert('You have already reserved this book before.');
-            return;
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}reservations`,
+                { bookId: book._id },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (response.data.output === 1) {
+                setIsBookAvailable(false);
+                setIsReserved(true);
+                toast.success('Book reserved successfully for 3 days!');
+            } else {
+                toast.error(response.data.message || 'Reservation failed.');
+            }
+        } catch (error: any) {
+            console.error('Reservation error:', error);
+            toast.error(
+                error.response?.data?.message || 'Something went wrong while reserving the book.'
+            );
         }
-
-        if (reservations.some(r => r.bookId === book.id)) {
-            alert('This book is already reserved.');
-            return;
-        }
-
-        reservations.push({ bookId: book.id, reservedAt: Date.now() });
-        saveReservations(reservations, RESERVATION_KEY);
-        saveReservations([...permanentReservations, { bookId: book.id, reservedAt: Date.now() }], PERMANENT_RESERVATION_KEY);
-        setIsReserved(true);
-
-        updateBookAvailability(book.id, true);
-        alert('Book reserved successfully for 3 days!');
     };
 
     return (
@@ -129,7 +125,7 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
                 <Dialog.Panel className="relative max-w-3xl w-full bg-white rounded-2xl shadow-xl overflow-hidden ring-1 ring-amber-200">
                     <button
                         onClick={() => setIsOpen(false)}
-                        className="absolute top-2 md:top-4 right-2  md:right-4 text-gray-400 hover:text-amber-600 transition rounded-full border cursor-pointer "
+                        className="absolute top-2 md:top-4 right-2 md:right-4 text-gray-400 hover:text-amber-600 transition rounded-full border cursor-pointer"
                         aria-label="Close"
                     >
                         <FaXmark className="w-6 h-6" />
@@ -142,7 +138,7 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
 
                     <nav className="flex border-b border-gray-200 px-4 mb-4 select-none text-sm">
                         <button
-                            className={`py - 2 mr-6 font-semibold ${activeTab === 'details'
+                            className={`py-2 mr-6 font-semibold ${activeTab === 'details'
                                 ? 'border-b-2 border-amber-600 text-amber-600'
                                 : 'text-gray-500 hover:text-amber-600'
                                 }`}
@@ -151,7 +147,7 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
                             Details
                         </button>
                         <button
-                            className={`py - 2 font-semibold ${activeTab === 'description'
+                            className={`py-2 font-semibold ${activeTab === 'description'
                                 ? 'border-b-2 border-amber-600 text-amber-600'
                                 : 'text-gray-500 hover:text-amber-600'
                                 }`}
@@ -176,7 +172,9 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
                         <div className="w-full md:w-2/3 text-gray-800 text-sm space-y-4">
                             {activeTab === 'details' && (
                                 <div className="bg-white rounded-2xl w-full space-y-6">
-                                    <h2 className="text-xl md:text-2xl font-bold text-gray-900 border-b pb-2">📘 Book Information</h2>
+                                    <h2 className="text-xl md:text-2xl font-bold text-gray-900 border-b pb-2">
+                                        📘 Book Information
+                                    </h2>
                                     <div className="grid grid-cols-2 gap-4 text-sm text-gray-700">
                                         <InfoItem label="Author" value={book.author} icon={<FaUser />} />
                                         <InfoItem label="Category" value={book.category} icon={<FaBook />} />
@@ -184,20 +182,36 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
                                         <InfoItem label="Language" value={book.language} icon={<FaLanguage />} />
                                         <InfoItem label="Edition" value={book.edition || 'N/A'} icon={<FaFileAlt />} />
                                         <InfoItem label="Pages" value={`${book.pages}`} icon={<FaFileAlt />} />
-                                        <InfoItem label="Price" value={`$${book.price.toFixed(2)} ${book.currency}`} icon={<FaDollarSign />} />
+                                        <InfoItem
+                                            label="Price"
+                                            value={`$${book.price.toFixed(2)} ${book.currency}`}
+                                            icon={<FaDollarSign />}
+                                        />
                                         <InfoItem label="Rating" value={`${book.rating} / 5`} icon={<FaStar />} />
                                         <InfoItem
                                             label="Available"
-                                            value={book.available ? 'Yes' : 'No'}
-                                            icon={book.available ? <FaCheckCircle className="text-green-500" /> : <FaTimesCircle className="text-red-500" />}
-                                            valueClass={book.available ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}
+                                            value={isBookAvailable ? 'Yes' : 'No'}
+                                            icon={
+                                                isBookAvailable ? (
+                                                    <FaCheckCircle className="text-green-500" />
+                                                ) : (
+                                                    <FaTimesCircle className="text-red-500" />
+                                                )
+                                            }
+                                            valueClass={
+                                                isBookAvailable
+                                                    ? 'text-green-600 font-semibold'
+                                                    : 'text-red-600 font-semibold'
+                                            }
                                         />
                                     </div>
                                 </div>
                             )}
 
                             {activeTab === 'description' && (
-                                <p className="text-gray-700 leading-relaxed whitespace-pre-line">{book.description}</p>
+                                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                                    {book.description}
+                                </p>
                             )}
                         </div>
                     </div>
@@ -211,20 +225,27 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
                                 : 'bg-gray-400 cursor-not-allowed'
                                 }`}
                         >
-                            {isReserved ? 'Reserved (3 days)' : book.available ? 'Reserve This Book' : 'Not Available'}
+                            {isReserved
+                                ? 'Reserved (3 days)'
+                                : book.available
+                                    ? 'Reserve This Book'
+                                    : 'Not Available'}
                         </button>
                     </div>
                 </Dialog.Panel>
-            </div >
+            </div>
 
             {isLoginModalOpen && (
-                <LoginModal
+                <AuthModal
                     isOpen={isLoginModalOpen}
                     setIsOpen={setIsLoginModalOpen}
-                    onLoginSuccess={() => { }}
+                    onAuthSuccess={(user) => {
+                        setUser(user);
+                        setIsLoginModalOpen(false);
+                    }}
                 />
             )}
-        </Dialog >
+        </Dialog>
     );
 };
 
@@ -237,8 +258,8 @@ interface InfoItemProps {
 
 const InfoItem: React.FC<InfoItemProps> = ({ label, value, icon, valueClass }) => (
     <div className="flex items-start gap-2">
-        <div className="text-amber-600 mt-1  text-xl md:text-2xl">{icon}</div>
-        <div className='flex flex-col space-y-1'>
+        <div className="text-amber-600 mt-1 text-xl md:text-2xl">{icon}</div>
+        <div className="flex flex-col space-y-1">
             <div className="text-sm md:text-xl uppercase text-gray-500">{label}</div>
             <div className={`text-xs font-medium ${valueClass || 'text-gray-800'}`}>{value}</div>
         </div>

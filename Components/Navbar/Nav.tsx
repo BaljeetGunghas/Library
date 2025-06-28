@@ -6,24 +6,29 @@ import { HiBars3BottomRight } from "react-icons/hi2";
 import { navLinks } from "@/Constant/constant";
 import { MdLocalLibrary } from "react-icons/md";
 import { FaUserCircle } from "react-icons/fa";
-import { LoginModal } from "../Home/LoginSignup/LoginModal";
+import AuthModal from "../Home/LoginSignup/AuthModel";
+import { logoutRequest } from "@/redux/slices/authSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../Home/LoginSignup/authContext";
 
 type Props = {
     openNav: () => void;
 };
 
-export type User = {
-    id: string;
-    email: string;
-    avatarUrl?: string;
-};
 
-const Nav = ({ openNav }: Props) => {
+export const Nav = ({ openNav }: Props) => {
+    const dispatch = useAppDispatch();
+    const router = useRouter();
+    const { user } = useAppSelector((state) => state.auth);
+    const { setUser } = useAuth();
+
     const [navBg, setNavebg] = useState<boolean>(false);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
-    const [user, setUser] = useState<User | null>(null);
+
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+
 
     useEffect(() => {
         const handler = () => {
@@ -68,17 +73,12 @@ const Nav = ({ openNav }: Props) => {
         };
     }, [dropdownOpen]);
 
-    const handleLogout = () => {
-        localStorage.removeItem("user");
-        localStorage.removeItem("library_reservations_permanent");
-        localStorage.removeItem("library_reservations");
+    const handleLogout = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+        dispatch(logoutRequest());
         setUser(null);
         setDropdownOpen(false);
-    };
-
-    const handleLoginSuccess = (userData: User) => {
-        setUser(userData);
-        setIsLoginModalOpen(false);
+        router.push('/')
     };
 
     return (
@@ -121,20 +121,9 @@ const Nav = ({ openNav }: Props) => {
                                 className="flex items-center space-x-2 focus:outline-none cursor-pointer"
                                 aria-label="User menu"
                             >
-                                {/* Use avatar if available else default icon */}
-                                {user.avatarUrl ? (
-                                    <Image
-                                        src={user.avatarUrl}
-                                        alt="User Avatar"
-                                        width={40}
-                                        height={40}
-                                        className="rounded-full object-cover"
-                                    />
-                                ) : (
-                                    <FaUserCircle className="text-white text-4xl" />
-                                )}
+                                <FaUserCircle className="text-white text-4xl" />
                                 <span className="text-white hidden sm:inline-block truncate max-w-[120px]">
-                                    {user.email}
+                                    {user.name}
                                 </span>
                             </button>
 
@@ -145,8 +134,8 @@ const Nav = ({ openNav }: Props) => {
                                         Reserved Book
                                     </Link>
                                     <button
-                                        onClick={handleLogout}
-                                        className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-100 text-sm"
+                                        onClick={(e) => handleLogout(e)}
+                                        className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-100 text-sm cursor-pointer"
                                     >
                                         Logout
                                     </button>
@@ -170,14 +159,15 @@ const Nav = ({ openNav }: Props) => {
             </div>
 
             {isLoginModalOpen && (
-                <LoginModal
+                <AuthModal
                     isOpen={isLoginModalOpen}
                     setIsOpen={setIsLoginModalOpen}
-                    onLoginSuccess={handleLoginSuccess} // Pass callback
+                    onAuthSuccess={(user) => {
+                        setUser(user);
+                        setIsLoginModalOpen(false);
+                    }}
                 />
             )}
         </div>
     );
 };
-
-export default Nav;

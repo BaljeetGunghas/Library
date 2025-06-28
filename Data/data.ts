@@ -1,6 +1,6 @@
 
 export interface Book {
-    id: number;
+    _id: string;
     title: string;
     author: string;
     description: string;
@@ -1691,4 +1691,5 @@ export const contactData = {
   linkdin: 'https://www.linkedin.com/in/dev-baljeet-gunghas-b6698421b/',
   github: 'https://github.com/BaljeetGunghas',
   instagram: 'https://www.instagram.com/baljeet_gunghas2/',
+  portfolio:'https://baljeetgunghasportfolio.netlify.app/'
 };

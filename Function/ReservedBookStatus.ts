@@ -1,8 +1,8 @@
 import { books } from "@/Data/data";
 
-export function updateBookAvailability(bookId: number, isAvailable: boolean) {
+export function updateBookAvailability(bookId: string, isAvailable: boolean) {
   return books.map(book => {
-    if (book.id === bookId) {
+    if (String(book.id) === bookId) {
       return { ...book, available: isAvailable };
     }    
     return book;

@@ -3,14 +3,17 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { LoginModal } from '../LoginSignup/LoginModal';
-import { User } from '@/Components/Navbar/Nav';
+import AuthModal from '../LoginSignup/AuthModel';
+import { User } from '@/redux/types/user';
+import { useAuth } from '../LoginSignup/authContext';
+import { useAppSelector } from '@/redux/hooks';
 
 const Hero = () => {
     const [query, setQuery] = useState('');
     const router = useRouter();
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
-    const [user, setUser] = useState<User | null>(null);
+    const { user, setUser } = useAuth();
+    const { user: USER } = useAppSelector((state) => state.auth);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -19,17 +22,11 @@ const Hero = () => {
         }
     }, []);
 
-
-    const handleLoginSuccess = (userData: User) => {
-        setUser(userData);
-        setIsLoginModalOpen(false);
-    };
-
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         const trimmedQuery = query.trim();
         if (trimmedQuery) {
-            router.push(`/books?query=${encodeURIComponent(trimmedQuery)}`);
+            router.push(`/books?query=${encodeURIComponent(trimmedQuery)}&page=1`);
         } else {
             router.push('/books');
         }
@@ -98,7 +95,7 @@ const Hero = () => {
                     </Link>
                     <button
                         onClick={() => setIsLoginModalOpen(true)}
-                        disabled={user?.id ? true : false}
+                        disabled={user?.id || USER?.id ? true : false}
                         className="bg-white cursor-pointer disabled:cursor-not-allowed disabled:bg-slate-300 hover:bg-gray-100 text-black font-semibold text-base sm:text-lg px-6 py-3 rounded-full shadow-lg transition duration-300"
                     >
                         👤 Join Now
@@ -117,10 +114,13 @@ const Hero = () => {
             </div>
 
             {isLoginModalOpen && (
-                <LoginModal
+                <AuthModal
                     isOpen={isLoginModalOpen}
                     setIsOpen={setIsLoginModalOpen}
-                    onLoginSuccess={handleLoginSuccess} // Pass callback
+                    onAuthSuccess={(user) => {
+                        setUser(user);
+                        setIsLoginModalOpen(false);
+                    }}
                 />
             )}
         </section>
