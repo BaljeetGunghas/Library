@@ -3,6 +3,7 @@ import "./globals.css";
 import { Lato } from "next/font/google";
 import ResponsiveNavbar from "@/Components/Navbar/ResponsiveNavBar";
 import Footer from "@/Components/Footer/Footer";
+import StoreProvider from "./storeProvider";
 
 const fonts = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -69,14 +70,9 @@ export default function RootLayout({
       <body
         className={`${fonts.className} antialiased bg-amber-300 custom-scrollbar scroll-smooth`}
       >
-        <ResponsiveNavbar />
-        <div
-          className="main_bg"
-          style={{ position: "relative", overflow: "hidden", zIndex: 10 }}
-        >
+        <StoreProvider>
           {children}
-        </div>
-        <Footer />
+        </StoreProvider>
       </body>
     </html>
   );

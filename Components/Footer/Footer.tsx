@@ -4,7 +4,8 @@ import {
   FaEnvelope,
   FaLinkedin,
   FaGithub,
-  FaInstagram
+  FaInstagram,
+  FaGlobe
 } from 'react-icons/fa';
 
 const FixedFooterIcons = () => {
@@ -28,6 +29,12 @@ const FixedFooterIcons = () => {
       color: 'bg-[#0077b5] hover:bg-[#0a66c2]'
     },
     {
+      href: contactData.portfolio,
+      icon: <FaGlobe />,
+      label: 'Portfolio',
+      color: 'bg-gradient-to-br from-green-500 to-yellow-500 hover:from-green-600 hover:to-yellow-600'
+    },
+    {
       href: contactData.github,
       icon: <FaGithub />,
       label: 'GitHub',
@@ -38,11 +45,13 @@ const FixedFooterIcons = () => {
       icon: <FaInstagram />,
       label: 'Instagram',
       color: 'bg-gradient-to-br from-pink-500 to-yellow-500 hover:from-pink-600 hover:to-yellow-600'
-    }
+    },
+
+
   ];
 
   return (
-    <footer className="fixed bottom-4 left-1/2 transform -translate-x-1/2  md:w-[80%] max-w-5xl bg-black/30 backdrop-blur-md rounded-full shadow-xl px-6 py-3 flex items-center justify-center gap-6 z-50">
+    <footer className="fixed bottom-4 left-1/2 transform -translate-x-1/2 md:w-[80%] max-w-5xl bg-black/30 backdrop-blur-md rounded-full shadow-xl px-6 py-3 flex items-center justify-center gap-6 z-50">
       {iconLinks.map(({ href, icon, label, color }, idx) => (
         <a
           key={idx}
