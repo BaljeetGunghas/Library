@@ -9,10 +9,18 @@ export const registerUser = async (data: RegisterForm): Promise<RegisterResponse
       { withCredentials: true }
     );
     return response.data;  // <-- only the data, not the full response
-  } catch (error: any) {
+  } catch (error: unknown) {
+    let errorMessage = 'Something went wrong';
+
+    if (axios.isAxiosError(error)) {
+      errorMessage = error.response?.data?.message || error.message;
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
     return {
       success: false,
-      message: error.response?.data?.message || error.message,
+      message: errorMessage,
       jsonResponse: null,
       output: 0,
     };
@@ -27,10 +35,18 @@ export const loginUser = async (data: LoginForm): Promise<LoginResponse> => {
       { withCredentials: true }
     );
     return response.data;
-  } catch (error: any) {
+  } catch (error: unknown) {
+    let errorMessage = 'Something went wrong';
+
+    if (axios.isAxiosError(error)) {
+      errorMessage = error.response?.data?.message || error.message;
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
     return {
       success: false,
-      message: error.response?.data?.message || error.message,
+      message: errorMessage,
       jsonResponse: null,
       output: 0,
     };
@@ -53,10 +69,19 @@ export const logoutUser = async (): Promise<{
       success: true,
       message: response.data?.message || 'Logout successful',
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    let errorMessage = 'Something went wrong';
+
+    if (axios.isAxiosError(error)) {
+      errorMessage = error.response?.data?.message || error.message;
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+
     return {
       success: false,
-      message: error.response?.data?.message || error.message,
+      message: errorMessage,
     };
   }
 };

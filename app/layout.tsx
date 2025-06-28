@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Lato } from "next/font/google";
-import ResponsiveNavbar from "@/Components/Navbar/ResponsiveNavBar";
-import Footer from "@/Components/Footer/Footer";
 import StoreProvider from "./storeProvider";
 
 const fonts = Lato({
