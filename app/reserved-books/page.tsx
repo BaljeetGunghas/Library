@@ -58,8 +58,7 @@ const ReservedBooksPage = () => {
   const cancelReservation = async (reservationId: string) => {
     try {
       setLoadingId(reservationId); // Start loading
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      const token = user?.token;
+      const token = localStorage.getItem('token');
 
       await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}reservations/${reservationId}`, {
         withCredentials: true,
