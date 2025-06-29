@@ -24,6 +24,7 @@ const ReservedBooksPage = () => {
   const router = useRouter();
   const [reservedBooks, setReservedBooks] = useState<ReservedBook[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
@@ -56,6 +57,7 @@ const ReservedBooksPage = () => {
 
   const cancelReservation = async (reservationId: string) => {
     try {
+      setLoadingId(reservationId); // Start loading
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       const token = user?.token;
 
@@ -71,8 +73,11 @@ const ReservedBooksPage = () => {
     } catch (error) {
       console.error('Cancel reservation failed:', error);
       toast.error('Failed to cancel reservation.');
+    } finally {
+      setLoadingId(null); // Stop loading
     }
   };
+
 
   if (!loading && reservedBooks.length === 0) {
     return (
@@ -142,11 +147,16 @@ const ReservedBooksPage = () => {
 
                   <button
                     onClick={() => cancelReservation(_id)}
+                    disabled={loadingId === _id}
                     aria-label={`Cancel reservation for ${book.title}`}
-                    className="mt-4 md:mt-0 px-5 py-2 cursor-pointer bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition focus:outline-none focus:ring-4 focus:ring-red-400"
+                    className={`mt-4 md:mt-0 px-5 py-2 text-white rounded-lg font-semibold transition focus:outline-none 
+    ${loadingId === _id
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-400 cursor-pointer'}`}
                   >
-                    Cancel
+                    {loadingId === _id ? 'Cancelling...' : 'Cancel'}
                   </button>
+
                 </li>
               );
             })}

@@ -27,62 +27,37 @@ interface BookDetailsModalProps {
     book: Book;
 }
 
-const RESERVATION_KEY = 'library_reservations';
-
-interface Reservation {
-    bookId: string;
-    reservedAt: number;
-}
-
-const getReservations = (key: string): Reservation[] => {
-    if (typeof window === 'undefined') return [];
-    try {
-        const data = localStorage.getItem(key);
-        return data ? JSON.parse(data) : [];
-    } catch {
-        return [];
-    }
-};
-
-const saveReservations = (reservations: Reservation[], key: string) => {
-    localStorage.setItem(key, JSON.stringify(reservations));
-};
-
-const isExpired = (reservedAt: number) => {
-    const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
-    return Date.now() - reservedAt > THREE_DAYS;
-};
-
 const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, book }) => {
     const { user, setUser } = useAuth();
     const { user: USER } = useAppSelector((state) => state.auth);
     const [activeTab, setActiveTab] = useState<'details' | 'description'>('details');
     const [isReserved, setIsReserved] = useState(false);
+    const [hasReservedBefore, setHasReservedBefore] = useState(false);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isBookAvailable, setIsBookAvailable] = useState(book.available);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
             setUser(JSON.parse(storedUser));
         }
-    }, []);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setUser]);
+
     useEffect(() => {
-        let reservations = getReservations(RESERVATION_KEY);
-        reservations = reservations.filter((r) => !isExpired(r.reservedAt));
-        saveReservations(reservations, RESERVATION_KEY);
+        const userId = user?.id || USER?.id;
 
-        const localReserved = reservations.some((r) => r.bookId === book._id);
-        const userId = user?.id;
+        if (userId && Array.isArray(book.reservedBy)) {
+            const hasReserved = book.reservedBy.includes(userId);
+            setHasReservedBefore(hasReserved);
+            //   setIsReserved(hasReserved);
+        } else {
+            //   setIsReserved(false);
+            setHasReservedBefore(false);
+        }
 
-        // Check server-side `reservedBy` list
-        const serverReserved = userId && book.reservedBy?.includes(userId);
+        setIsBookAvailable(book.available);
+    }, [book.reservedBy, book.available, user, USER]);
 
-        // If either local or server reservation exists
-        setIsReserved(localReserved || !!serverReserved);
-    }, [book._id, user]);
     const handleReserve = async () => {
         if (!book.available) return;
 
@@ -120,15 +95,21 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
             } else if (error instanceof Error) {
                 errorMessage = error.message;
             }
-            toast.error(
-                errorMessage || 'Something went wrong while reserving the book.'
-            );
+            toast.error(errorMessage);
+        }
+    };
 
-        };
+    let reserveButtonLabel = '📚 Reserve This Book';
+    if (!isBookAvailable) {
+        reserveButtonLabel = '❌ Not Available';
+    } else if (isReserved) {
+        reserveButtonLabel = '✅ Reserved (3 days)';
+    } else if (hasReservedBefore) {
+        reserveButtonLabel = '📕 Already Reserved';
     }
 
     return (
-        <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-40">
+        <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />
             <div className="fixed inset-0 flex items-center justify-center p-2 overflow-y-auto">
                 <Dialog.Panel className="relative max-w-3xl w-full bg-white rounded-2xl shadow-xl overflow-hidden ring-1 ring-amber-200">
@@ -225,22 +206,25 @@ const BookDetailsModal: React.FC<BookDetailsModalProps> = ({ isOpen, setIsOpen, 
                         </div>
                     </div>
 
-                    <div className="bg-amber-50 px-6 py-4 text-right">
+                    <div className="bg-amber-50 px-6 py-4 flex justify-between items-center">
+                        <button
+                            onClick={() => setIsOpen(false)}
+                            className=" px-5 py-2 text-white rounded-lg font-semibold transition focus:outline-none bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-400 cursor-pointer"
+                        >
+                            Close
+                        </button>
                         <button
                             disabled={!book.available || isReserved}
                             onClick={handleReserve}
                             className={`inline-block rounded-xl px-6 py-2 font-semibold cursor-pointer text-white shadow-md transition ${book.available && !isReserved
-                                ? 'bg-amber-600 hover:bg-amber-700 focus:ring-4 focus:ring-amber-300'
-                                : 'bg-gray-400 cursor-not-allowed'
+                                    ? 'bg-amber-600 hover:bg-amber-700 focus:ring-4 focus:ring-amber-300'
+                                    : 'bg-gray-400 cursor-not-allowed'
                                 }`}
                         >
-                            {isReserved
-                                ? 'Reserved (3 days)'
-                                : book.available
-                                    ? 'Reserve This Book'
-                                    : 'Not Available'}
+                            {reserveButtonLabel}
                         </button>
                     </div>
+
                 </Dialog.Panel>
             </div>
 
