@@ -7,7 +7,7 @@ import { navLinks } from "@/Constant/constant";
 import { MdLocalLibrary } from "react-icons/md";
 import { FaUserCircle } from "react-icons/fa";
 import AuthModal from "../Home/LoginSignup/AuthModel";
-import { logoutRequest } from "@/redux/slices/authSlice";
+import { logoutRequest, registerSuccess } from "@/redux/slices/authSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../Home/LoginSignup/authContext";
@@ -48,8 +48,14 @@ export const Nav = ({ openNav }: Props) => {
     // Load user from localStorage on mount
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
-        if (storedUser) {
+        const token = localStorage.getItem('token');
+
+        if (storedUser && token) {
+            // alert('hii')
             setUser(JSON.parse(storedUser));
+            dispatch(registerSuccess({ user: JSON.parse(storedUser), token: token || '' }))
+            console.log(user,JSON.parse(storedUser));
+            
         }
     }, []);
 

@@ -25,6 +25,8 @@ const authSlice = createSlice({
             state.error = null;
         },
         registerSuccess(state, action: PayloadAction<{ user: User | null; token: string }>) {
+            console.log(action.payload,'payload');
+            
             state.user = action.payload.user;
             state.token = action.payload.token;
             state.loading = false;
