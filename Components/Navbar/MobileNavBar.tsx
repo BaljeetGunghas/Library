@@ -20,7 +20,7 @@ const MobileNaveBar = ({ showNav, closeNav }: Props) => {
             <div
                 onClick={closeNav}
                 className={`fixed inset-0 bg-black ${navOpen} transition-opacity duration-300 ${showNav ? 'opacity-70 pointer-events-auto' : 'opacity-0 pointer-events-none'
-                    } z-40`}
+                    } z-60`}
             />
 
             <div className={`${navOpen} text-white transform transition-all duration-500 delay-300  fixed justify-center flex   flex-col h-full w-[80%] sm:w-[60%] secondary_bg space-y-6 z-100  `}>

@@ -48,7 +48,7 @@ const CategoriesPage = () => {
                         {categories.map((cat, index) => (
                             <Link
                                 key={cat.id}
-                                href={`/books?category=${cat.slug}`}
+                                href={`books?query=${encodeURIComponent(cat.slug)}&page=1`}
                                 className="block backdrop-blur-3xl p-6 rounded-xl shadow hover:shadow-lg transition border border-gray-200 hover:border-yellow-400 text-center"
                                 data-aos="zoom-in"
                                 data-aos-delay={`${index * 100}`}

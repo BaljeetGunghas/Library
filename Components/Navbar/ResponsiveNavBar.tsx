@@ -11,7 +11,7 @@ const ResponsiveNavbar = () => {
     const closeNavHandler = () => setShowNav(false);
 
     return (
-        <div>
+        <div className='relative z-50'>
             <Nav openNav={showNavHandler} />
             {showNav && <MobileNaveBar showNav={showNav} closeNav={closeNavHandler} />}
         </div>
